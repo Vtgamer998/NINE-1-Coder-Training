@@ -1,0 +1,4 @@
+assets/
+checkpoints/*.pt
+__pycache__/
+.venv/
