@@ -81,8 +81,12 @@ def main():
     if NINEConfig.from_dict(old['cfg']) != cfg:
         raise ValueError('Configuração do LoRA difere da base')
     tok = BPETokenizer.load(a.tok)
-    if len(tok) != cfg.vocab_size:
-        raise ValueError('Tokenizer não corresponde ao vocabulário do modelo')
+    if tok.vocab_size != cfg.vocab_size:
+        raise ValueError('Tamanho configurado do tokenizer difere do modelo')
+    if not tok.vocab:
+        raise ValueError('Tokenizer vazio')
+    if min(tok.vocab) < 0 or max(tok.vocab) >= cfg.vocab_size:
+        raise ValueError('IDs do tokenizer fora do vocabulário do modelo')
     model = NINE1(cfg)
     model.load_state_dict(base['model'], strict=True)
     add_lora(model, r=int(old['r']), alpha=int(old['alpha']), target=old.get('lora_target', 'qkv'))
